@@ -284,10 +284,20 @@
         });
 
         // Step 5: Convert to hex color
-        // Use the finalValue (0-255) for each color channel
-        const hexColor = '#' + partData.slice(0, 3).map(data => {
-            return data.finalValue.toString(16).padStart(2, '0');
-        }).join('');
+        // Use all six parts to create a more complex color
+        const hexColor = '#' + 
+            // Use parts 0 and 3 for Red component
+            Math.floor((partData[0].finalValue + partData[3].finalValue) / 2).toString(16).padStart(2, '0') +
+            // Use parts 1 and 4 for Green component
+            Math.floor((partData[1].finalValue + partData[4].finalValue) / 2).toString(16).padStart(2, '0') +
+            // Use parts 2 and 5 for Blue component
+            Math.floor((partData[2].finalValue + partData[5].finalValue) / 2).toString(16).padStart(2, '0');
+            
+        // Create an alternate color using the parts in reverse order
+        const hexColor2 = '#' +
+            Math.floor((partData[3].finalValue + partData[0].finalValue) / 2).toString(16).padStart(2, '0') +
+            Math.floor((partData[4].finalValue + partData[1].finalValue) / 2).toString(16).padStart(2, '0') +
+            Math.floor((partData[5].finalValue + partData[2].finalValue) / 2).toString(16).padStart(2, '0');
 
         // Update the main color box in the top panel
         colorPreview.style.backgroundColor = hexColor;
@@ -308,11 +318,121 @@
             hexColor: hexColor.toUpperCase()
         });
 
-        // Display final result
-        finalHex.innerHTML = `
-            <div class="final-hex">${hexColor.toUpperCase()}</div>
-            <div class="color-preview" style="background-color: ${hexColor};"></div>
-        `;
+        // Final hex display
+        finalHex.innerHTML = '';
+        
+        // Create a visual component showing how each part contributes to the color
+        const colorMixingDiv = document.createElement('div');
+        colorMixingDiv.className = 'color-mixing';
+        colorMixingDiv.style.marginBottom = '20px';
+        
+        // Create a table to visualize color component creation
+        const mixingTable = document.createElement('table');
+        mixingTable.className = 'mixing-table';
+        mixingTable.style.width = '100%';
+        mixingTable.style.borderCollapse = 'collapse';
+        mixingTable.style.marginBottom = '20px';
+        
+        // Create header row
+        const headerRow = document.createElement('tr');
+        
+        ['Component', 'Parts Used', 'Values', 'Average', 'Hex'].forEach(text => {
+            const th = document.createElement('th');
+            th.textContent = text;
+            th.style.padding = '8px';
+            th.style.textAlign = 'left';
+            th.style.borderBottom = '1px solid #333';
+            headerRow.appendChild(th);
+        });
+        
+        mixingTable.appendChild(headerRow);
+        
+        // Create rows for R, G, B components
+        const componentPairs = [
+            {name: 'Red', parts: [0, 3], value1: partData[0].finalValue, value2: partData[3].finalValue},
+            {name: 'Green', parts: [1, 4], value1: partData[1].finalValue, value2: partData[4].finalValue},
+            {name: 'Blue', parts: [2, 5], value1: partData[2].finalValue, value2: partData[5].finalValue}
+        ];
+        
+        componentPairs.forEach(comp => {
+            const row = document.createElement('tr');
+            
+            // Component name
+            const nameCell = document.createElement('td');
+            nameCell.textContent = comp.name;
+            nameCell.style.padding = '8px';
+            nameCell.style.fontWeight = 'bold';
+            row.appendChild(nameCell);
+            
+            // Parts used
+            const partsCell = document.createElement('td');
+            partsCell.textContent = `Part ${comp.parts[0] + 1} + Part ${comp.parts[1] + 1}`;
+            partsCell.style.padding = '8px';
+            row.appendChild(partsCell);
+            
+            // Values
+            const valuesCell = document.createElement('td');
+            valuesCell.textContent = `${comp.value1} + ${comp.value2}`;
+            valuesCell.style.padding = '8px';
+            valuesCell.style.fontFamily = 'monospace';
+            row.appendChild(valuesCell);
+            
+            // Average
+            const avg = Math.floor((comp.value1 + comp.value2) / 2);
+            const avgCell = document.createElement('td');
+            avgCell.textContent = avg;
+            avgCell.style.padding = '8px';
+            avgCell.style.fontFamily = 'monospace';
+            row.appendChild(avgCell);
+            
+            // Hex
+            const hexCell = document.createElement('td');
+            hexCell.textContent = avg.toString(16).padStart(2, '0');
+            hexCell.style.padding = '8px';
+            hexCell.style.fontFamily = 'monospace';
+            hexCell.style.fontWeight = 'bold';
+            row.appendChild(hexCell);
+            
+            mixingTable.appendChild(row);
+        });
+        
+        colorMixingDiv.appendChild(mixingTable);
+        finalHex.appendChild(colorMixingDiv);
+        
+        // Display the final colors
+        const finalColorsDiv = document.createElement('div');
+        finalColorsDiv.className = 'final-colors';
+        finalColorsDiv.style.display = 'flex';
+        finalColorsDiv.style.flexDirection = 'column';
+        finalColorsDiv.style.gap = '20px';
+        
+        // Primary color
+        const primaryColorDiv = document.createElement('div');
+        primaryColorDiv.className = 'final-color-item';
+        
+        const primaryHex = document.createElement('div');
+        primaryHex.className = 'final-hex';
+        primaryHex.textContent = hexColor.toUpperCase();
+        primaryHex.style.fontFamily = 'monospace';
+        primaryHex.style.fontSize = '1.5rem';
+        primaryHex.style.marginBottom = '10px';
+        primaryColorDiv.appendChild(primaryHex);
+        
+        const primaryPreview = document.createElement('div');
+        primaryPreview.className = 'color-preview';
+        primaryPreview.style.height = '60px';
+        primaryPreview.style.backgroundColor = hexColor;
+        primaryPreview.style.borderRadius = '6px';
+        primaryPreview.style.cursor = 'pointer';
+        primaryPreview.title = 'Click to copy color code';
+        primaryPreview.addEventListener('click', () => copyHexToClipboard(hexColor.toUpperCase()));
+        primaryColorDiv.appendChild(primaryPreview);
+        
+        // Add primary color to final colors
+        finalColorsDiv.appendChild(primaryColorDiv);
+        
+        // Add final colors to the results
+        finalHex.appendChild(finalColorsDiv);
 
         // Show results
         results.style.display = 'block';
@@ -404,10 +524,117 @@
         });
         
         // Restore final result
-        finalHex.innerHTML = `
-            <div class="final-hex">${state.data.hexColor}</div>
-            <div class="color-preview" style="background-color: ${state.data.hexColor};"></div>
-        `;
+        finalHex.innerHTML = '';
+
+        // Only create the mixing table if we have partData with finalValue properties
+        if (state.data.partData && 
+            state.data.partData.length >= 6 && 
+            state.data.partData[0].hasOwnProperty('finalValue')) {
+            
+            // Create color mixing visualization
+            const colorMixingDiv = document.createElement('div');
+            colorMixingDiv.className = 'color-mixing';
+            colorMixingDiv.style.marginBottom = '20px';
+            
+            // Create table
+            const mixingTable = document.createElement('table');
+            mixingTable.className = 'mixing-table';
+            mixingTable.style.width = '100%';
+            mixingTable.style.borderCollapse = 'collapse';
+            mixingTable.style.marginBottom = '20px';
+            
+            // Header row
+            const headerRow = document.createElement('tr');
+            ['Component', 'Parts Used', 'Values', 'Average', 'Hex'].forEach(text => {
+                const th = document.createElement('th');
+                th.textContent = text;
+                th.style.padding = '8px';
+                th.style.textAlign = 'left';
+                th.style.borderBottom = '1px solid #333';
+                headerRow.appendChild(th);
+            });
+            mixingTable.appendChild(headerRow);
+            
+            // Component rows
+            const componentPairs = [
+                {name: 'Red', parts: [0, 3], value1: state.data.partData[0].finalValue, value2: state.data.partData[3].finalValue},
+                {name: 'Green', parts: [1, 4], value1: state.data.partData[1].finalValue, value2: state.data.partData[4].finalValue},
+                {name: 'Blue', parts: [2, 5], value1: state.data.partData[2].finalValue, value2: state.data.partData[5].finalValue}
+            ];
+            
+            componentPairs.forEach(comp => {
+                const row = document.createElement('tr');
+                
+                // Component name
+                const nameCell = document.createElement('td');
+                nameCell.textContent = comp.name;
+                nameCell.style.padding = '8px';
+                nameCell.style.fontWeight = 'bold';
+                row.appendChild(nameCell);
+                
+                // Parts used
+                const partsCell = document.createElement('td');
+                partsCell.textContent = `Part ${comp.parts[0] + 1} + Part ${comp.parts[1] + 1}`;
+                partsCell.style.padding = '8px';
+                row.appendChild(partsCell);
+                
+                // Values
+                const valuesCell = document.createElement('td');
+                valuesCell.textContent = `${comp.value1} + ${comp.value2}`;
+                valuesCell.style.padding = '8px';
+                valuesCell.style.fontFamily = 'monospace';
+                row.appendChild(valuesCell);
+                
+                // Average
+                const avg = Math.floor((comp.value1 + comp.value2) / 2);
+                const avgCell = document.createElement('td');
+                avgCell.textContent = avg;
+                avgCell.style.padding = '8px';
+                avgCell.style.fontFamily = 'monospace';
+                row.appendChild(avgCell);
+                
+                // Hex
+                const hexCell = document.createElement('td');
+                hexCell.textContent = avg.toString(16).padStart(2, '0');
+                hexCell.style.padding = '8px';
+                hexCell.style.fontFamily = 'monospace';
+                hexCell.style.fontWeight = 'bold';
+                row.appendChild(hexCell);
+                
+                mixingTable.appendChild(row);
+            });
+            
+            colorMixingDiv.appendChild(mixingTable);
+            finalHex.appendChild(colorMixingDiv);
+        }
+        
+        // Display final color
+        const finalColorsDiv = document.createElement('div');
+        finalColorsDiv.className = 'final-colors';
+        
+        const primaryColorDiv = document.createElement('div');
+        primaryColorDiv.className = 'final-color-item';
+        
+        const primaryHex = document.createElement('div');
+        primaryHex.className = 'final-hex';
+        primaryHex.textContent = state.data.hexColor;
+        primaryHex.style.fontFamily = 'monospace';
+        primaryHex.style.fontSize = '1.5rem';
+        primaryHex.style.marginBottom = '10px';
+        primaryColorDiv.appendChild(primaryHex);
+        
+        const primaryPreview = document.createElement('div');
+        primaryPreview.className = 'color-preview';
+        primaryPreview.style.height = '60px';
+        primaryPreview.style.backgroundColor = state.data.hexColor;
+        primaryPreview.style.borderRadius = '6px';
+        primaryPreview.style.cursor = 'pointer';
+        primaryPreview.title = 'Click to copy color code';
+        primaryPreview.addEventListener('click', () => copyHexToClipboard(state.data.hexColor));
+        primaryColorDiv.appendChild(primaryPreview);
+        
+        finalColorsDiv.appendChild(primaryColorDiv);
+        finalHex.appendChild(finalColorsDiv);
         
         // Show results
         results.style.display = 'block';
@@ -430,7 +657,7 @@
         // Add to beginning of array
         history.unshift(entry);
         // Keep only last 25
-        history = history.slice(0, 25);
+        history = history.slice(0, 15);
         
         // Save to localStorage
         localStorage.setItem('ashhsha-history', JSON.stringify(history));
@@ -604,12 +831,8 @@
             
             // Demo with placeholder text
             textInput.addEventListener('input', function() {
-                const results = document.getElementById('results');
-                if (results.style.display === 'block' && textInput.value.trim()) {
-                    // Auto-generate on input change if results are visible
-                    clearTimeout(textInput.debounceTimer);
-                    textInput.debounceTimer = setTimeout(handleSubmit, 500);
-                }
+                // Remove auto-generation on input to prevent unexpected submissions
+                // Users must press Enter or click the button to generate
             });
         }
         
