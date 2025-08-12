@@ -16,21 +16,24 @@ body {
     min-height: 100vh;
     display: flex;
     flex-direction: column;
-    padding: 2rem;
-    gap: 2rem;
-    max-width: none;
+    padding: 1.5rem;
+    gap: 1.5rem;
+    width: 100%;
+    max-width: 100%;
 }
 
 .top-panel {
     display: grid;
-    grid-template-columns: 300px 1fr;
-    gap: 3rem;
-    align-items: start;
+    grid-template-columns: 280px 1fr;
+    gap: 2rem;
+    align-items: stretch;
     background: #111111;
     border: 1px solid #333;
     border-radius: 8px;
-    padding: 2rem;
+    padding: 1.5rem;
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+    min-height: 240px;
+    width: 100%;
 }
 
 .color-section {
@@ -48,8 +51,8 @@ body {
 }
 
 .color-box {
-    width: 200px;
-    height: 200px;
+    width: 180px;
+    height: 180px;
     background: #1a1a1a;
     border: 2px solid #333;
     border-radius: 4px;
@@ -61,13 +64,16 @@ body {
     display: flex;
     flex-direction: column;
     justify-content: center;
+    align-items: flex-start;
     gap: 1rem;
+    height: 100%;
 }
 
 .input-wrapper {
     display: flex;
     gap: 1rem;
     align-items: center;
+    width: 100%;
 }
 
 .subtitle {
@@ -127,10 +133,11 @@ button:active {
     background: #111111;
     border: 1px solid #333;
     border-radius: 8px;
-    padding: 2rem;
+    padding: 1.5rem;
     display: none;
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
     flex: 1;
+    width: 100%;
 }
 
 .step {
@@ -245,15 +252,15 @@ button:active {
 }
 
 /* Responsive Design */
-@media (max-width: 1024px) {
+@media (max-width: 1200px) {
     .top-panel {
         grid-template-columns: 250px 1fr;
-        gap: 2rem;
+        gap: 1.5rem;
     }
     
     .color-box {
-        width: 150px;
-        height: 150px;
+        width: 160px;
+        height: 160px;
     }
 }
 
@@ -267,10 +274,16 @@ button:active {
         grid-template-columns: 1fr;
         gap: 1.5rem;
         text-align: center;
+        min-height: auto;
     }
     
     .color-section {
         align-items: center;
+    }
+    
+    .color-box {
+        width: 120px;
+        height: 120px;
     }
     
     .input-wrapper {

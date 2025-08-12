@@ -124,15 +124,16 @@ document.addEventListener('DOMContentLoaded', function() {
             
             // Auto-focus input
             textInput.focus();
-        }
-    });
-
-    // Demo with placeholder text
-    textInput.addEventListener('input', function() {
-        if (results.style.display === 'block' && textInput.value.trim()) {
-            // Auto-generate on input change if results are visible
-            clearTimeout(textInput.debounceTimer);
-            textInput.debounceTimer = setTimeout(generateColor, 500);
+            
+            // Demo with placeholder text
+            textInput.addEventListener('input', function() {
+                const results = document.getElementById('results');
+                if (results.style.display === 'block' && textInput.value.trim()) {
+                    // Auto-generate on input change if results are visible
+                    clearTimeout(textInput.debounceTimer);
+                    textInput.debounceTimer = setTimeout(handleSubmit, 500);
+                }
+            });
         }
     });
 });
