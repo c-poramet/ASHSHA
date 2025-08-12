@@ -21,8 +21,8 @@ document.addEventListener('DOMContentLoaded', function() {
         const hash = CryptoJS.SHA256(inputText).toString();
         originalHash.textContent = hash;
 
-        // Step 2: Append two zeros at the front (258 characters total)
-        const prefixed = '00' + hash;
+        // Step 2: Append one zero at front and one at back (258 characters total)
+        const prefixed = '0' + hash + '0';
         prefixedHash.textContent = prefixed;
 
         // Step 3: Divide into 6 equal parts (43 characters each)
