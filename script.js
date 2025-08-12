@@ -103,6 +103,16 @@
 
         // Save to history
         saveToHistory(inputText, hexColor.toUpperCase());
+        
+        // Save current state
+        saveCurrentState(inputText, {
+            originalHash: hash,
+            prefixedHash: prefixed,
+            hashParts: hashParts,
+            partData: partData,
+            avgValues: avgValues,
+            hexColor: hexColor.toUpperCase()
+        });
 
         // Display final result
         finalHex.innerHTML = `
@@ -110,6 +120,95 @@
             <div class="color-preview" style="background-color: ${hexColor};"></div>
         `;
 
+        // Show results
+        results.style.display = 'block';
+    }
+
+    // State management functions
+    function saveCurrentState(inputText, data) {
+        const state = {
+            inputText: inputText,
+            timestamp: new Date().toISOString(),
+            data: data
+        };
+        
+        try {
+            localStorage.setItem('ashsha-current-state', JSON.stringify(state));
+        } catch (e) {
+            console.error('Error saving current state:', e);
+        }
+    }
+    
+    function loadCurrentState() {
+        try {
+            const stored = localStorage.getItem('ashsha-current-state');
+            return stored ? JSON.parse(stored) : null;
+        } catch (e) {
+            console.error('Error loading current state:', e);
+            return null;
+        }
+    }
+    
+    function restoreState(state) {
+        if (!state || !state.data) return;
+        
+        const textInput = document.getElementById('textInput');
+        const colorPreview = document.getElementById('colorPreview');
+        const overlayText = document.getElementById('overlayText');
+        const overlayHex = document.getElementById('overlayHex');
+        const originalHash = document.getElementById('originalHash');
+        const prefixedHash = document.getElementById('prefixedHash');
+        const hashPartsContainer = document.getElementById('hashParts');
+        const averages = document.getElementById('averages');
+        const finalHex = document.getElementById('finalHex');
+        const results = document.getElementById('results');
+        
+        // Restore input
+        textInput.value = state.inputText;
+        
+        // Restore color preview
+        colorPreview.style.backgroundColor = state.data.hexColor;
+        overlayText.textContent = state.inputText.length > 20 ? state.inputText.substring(0, 20) + '...' : state.inputText;
+        overlayHex.textContent = state.data.hexColor;
+        
+        // Restore hash displays
+        originalHash.textContent = state.data.originalHash;
+        prefixedHash.textContent = state.data.prefixedHash;
+        
+        // Restore parts
+        hashPartsContainer.innerHTML = '';
+        state.data.hashParts.forEach((part, index) => {
+            const partDiv = document.createElement('div');
+            partDiv.className = 'hash-part';
+            partDiv.innerHTML = `
+                <div class="part-label">Part ${index + 1}</div>
+                <div class="part-content">${part}</div>
+            `;
+            hashPartsContainer.appendChild(partDiv);
+        });
+        
+        // Restore averages
+        averages.innerHTML = '';
+        state.data.partData.forEach((data, index) => {
+            const avgDiv = document.createElement('div');
+            avgDiv.className = 'average-value';
+            avgDiv.innerHTML = `
+                <div class="avg-label">Part ${index + 1}</div>
+                <div class="avg-details">
+                    <div class="avg-sum">Sum: ${data.sum}</div>
+                    <div class="avg-exact">Exact: ${data.exactAverage.toFixed(3)}</div>
+                    <div class="avg-rounded">Rounded: ${data.roundedAverage}</div>
+                </div>
+            `;
+            averages.appendChild(avgDiv);
+        });
+        
+        // Restore final result
+        finalHex.innerHTML = `
+            <div class="final-hex">${state.data.hexColor}</div>
+            <div class="color-preview" style="background-color: ${state.data.hexColor};"></div>
+        `;
+        
         // Show results
         results.style.display = 'block';
     }
@@ -297,6 +396,12 @@
             
             // Load history on page load
             updateHistoryDisplay();
+            
+            // Restore previous state if exists
+            const savedState = loadCurrentState();
+            if (savedState) {
+                restoreState(savedState);
+            }
             
             // Demo with placeholder text
             textInput.addEventListener('input', function() {
