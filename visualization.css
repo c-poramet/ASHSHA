@@ -1,0 +1,39 @@
+/* Additional visualization styles */
+.char-group {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-top: 15px;
+}
+
+.char {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 30px;
+    height: 30px;
+    background: #1e1e1e;
+    border: 1px solid #333;
+    border-radius: 4px;
+    font-family: monospace;
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.char:hover {
+    background: #252525;
+    transform: scale(1.1);
+    box-shadow: 0 0 5px rgba(255, 255, 255, 0.2);
+}
+
+/* Operation visualization */
+.avg-operations, .avg-final {
+    background: #222;
+    border: 1px solid #333;
+    padding: 8px 12px;
+    border-radius: 4px;
+    margin-top: 5px;
+    font-family: monospace;
+    word-break: break-all;
+}

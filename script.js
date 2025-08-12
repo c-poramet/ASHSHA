@@ -39,15 +39,39 @@
             hashParts.push(prefixed.substring(start, end));
         }
 
-        // Display parts
+        // Display parts with character visualization
         hashPartsContainer.innerHTML = '';
         hashParts.forEach((part, index) => {
             const partDiv = document.createElement('div');
             partDiv.className = 'part';
-            partDiv.innerHTML = `
-                <div class="part-label">Part ${index + 1}</div>
-                <div class="part-content">${part}</div>
-            `;
+            
+            // Create part header
+            const partLabel = document.createElement('div');
+            partLabel.className = 'part-label';
+            partLabel.textContent = `Part ${index + 1}`;
+            partDiv.appendChild(partLabel);
+            
+            // Create text content 
+            const partContent = document.createElement('div');
+            partContent.className = 'part-content';
+            partContent.textContent = part;
+            partDiv.appendChild(partContent);
+            
+            // Create character visualization
+            const charGroup = document.createElement('div');
+            charGroup.className = 'char-group';
+            
+            // Add each character with its hex value
+            part.split('').forEach(char => {
+                const hexValue = parseInt(char, 16);
+                const charDiv = document.createElement('div');
+                charDiv.className = 'char';
+                charDiv.textContent = char;
+                charDiv.title = `Hex value: ${isNaN(hexValue) ? 0 : hexValue}`;
+                charGroup.appendChild(charDiv);
+            });
+            
+            partDiv.appendChild(charGroup);
             hashPartsContainer.appendChild(partDiv);
         });
 
@@ -68,8 +92,12 @@
             let value = 0;
             const chunkSize = 7; // Process 7 chars at a time
             
+            // Create visualization data for operations
+            let operationsLog = [];
+            
             for (let i = 0; i < part.length; i += chunkSize) {
                 let chunkValue = 0;
+                let chunkLog = [];
                 
                 // Process each character in the chunk
                 for (let j = 0; j < chunkSize && (i + j) < part.length; j++) {
@@ -77,34 +105,57 @@
                     if (!isNaN(hexValue)) {
                         // Apply different operations based on position
                         const position = (i + j) % 5;
+                        let opDescription = "";
+                        let oldValue = chunkValue;
                         
                         switch(position) {
                             case 0:
                                 // XOR with left shift by part index
                                 chunkValue ^= (hexValue << (partIndex % 8));
+                                opDescription = `${oldValue} ^ (${hexValue} << ${partIndex % 8}) = ${chunkValue}`;
                                 break;
                             case 1:
                                 // Multiply (with mod to prevent overflow)
                                 chunkValue = (chunkValue * (hexValue + 1)) % 256;
+                                opDescription = `(${oldValue} * (${hexValue} + 1)) % 256 = ${chunkValue}`;
                                 break;
                             case 2:
                                 // Bitwise rotation
                                 chunkValue = ((chunkValue << 4) | (chunkValue >>> 4)) ^ hexValue;
+                                opDescription = `((${oldValue} << 4) | (${oldValue} >>> 4)) ^ ${hexValue} = ${chunkValue}`;
                                 break;
                             case 3:
                                 // Addition with bit mask
                                 chunkValue = (chunkValue + hexValue) & 0xFF;
+                                opDescription = `(${oldValue} + ${hexValue}) & 0xFF = ${chunkValue}`;
                                 break;
                             case 4:
                                 // XOR with right shift
                                 chunkValue ^= (hexValue >>> (partIndex % 4));
+                                opDescription = `${oldValue} ^ (${hexValue} >>> ${partIndex % 4}) = ${chunkValue}`;
                                 break;
                         }
+                        
+                        chunkLog.push({
+                            position: i + j,
+                            char: part[i + j],
+                            hexValue: hexValue,
+                            operation: opDescription
+                        });
                     }
                 }
                 
                 // Combine chunk value with running total
+                let oldValue = value;
                 value = ((value << 3) | (value >>> 5)) ^ chunkValue;
+                
+                operationsLog.push({
+                    chunkStart: i,
+                    chunkEnd: Math.min(i + chunkSize - 1, part.length - 1),
+                    chunkValue: chunkValue,
+                    operations: chunkLog,
+                    combination: `((${oldValue} << 3) | (${oldValue} >>> 5)) ^ ${chunkValue} = ${value}`
+                });
             }
             
             // Ensure final value is in 0-255 range for full 8-bit color channels
@@ -115,7 +166,8 @@
                 exactAverage: exactAverage,
                 roundedAverage: roundedAverage,
                 xorResult: value,
-                finalValue: finalValue
+                finalValue: finalValue,
+                operationsLog: operationsLog
             };
         });
 
@@ -124,16 +176,110 @@
         partData.forEach((data, index) => {
             const avgDiv = document.createElement('div');
             avgDiv.className = 'average-value';
-            avgDiv.innerHTML = `
-                <div class="avg-label">Part ${index + 1}</div>
-                <div class="avg-details">
-                    <div class="avg-sum">Sum: ${data.sum}</div>
-                    <div class="avg-exact">Exact: ${data.exactAverage.toFixed(3)}</div>
-                    <div class="avg-rounded">Average: ${data.roundedAverage}</div>
-                    <div class="avg-operations">Operations: ${data.xorResult}</div>
-                    <div class="avg-final">Final Value: ${data.finalValue} (${data.finalValue.toString(16)})</div>
-                </div>
-            `;
+            
+            // Create header
+            const avgLabel = document.createElement('div');
+            avgLabel.className = 'avg-label';
+            avgLabel.textContent = `Part ${index + 1}`;
+            avgDiv.appendChild(avgLabel);
+            
+            // Create details container
+            const avgDetails = document.createElement('div');
+            avgDetails.className = 'avg-details';
+            
+            // Add basic information
+            const sumDiv = document.createElement('div');
+            sumDiv.className = 'avg-sum';
+            sumDiv.textContent = `Sum: ${data.sum}`;
+            avgDetails.appendChild(sumDiv);
+            
+            const exactDiv = document.createElement('div');
+            exactDiv.className = 'avg-exact';
+            exactDiv.textContent = `Exact Average: ${data.exactAverage.toFixed(3)}`;
+            avgDetails.appendChild(exactDiv);
+            
+            const roundedDiv = document.createElement('div');
+            roundedDiv.className = 'avg-rounded';
+            roundedDiv.textContent = `Rounded Average: ${data.roundedAverage}`;
+            avgDetails.appendChild(roundedDiv);
+            
+            // Add detailed operations log
+            if (data.operationsLog && data.operationsLog.length > 0) {
+                const opsToggle = document.createElement('button');
+                opsToggle.textContent = 'Show Operations Details';
+                opsToggle.className = 'ops-toggle';
+                opsToggle.style.padding = '5px 10px';
+                opsToggle.style.marginTop = '10px';
+                opsToggle.style.marginBottom = '10px';
+                opsToggle.style.fontSize = '0.8rem';
+                avgDetails.appendChild(opsToggle);
+                
+                const opsDetails = document.createElement('div');
+                opsDetails.className = 'ops-details';
+                opsDetails.style.display = 'none';
+                
+                data.operationsLog.forEach((chunk, chunkIndex) => {
+                    const chunkDiv = document.createElement('div');
+                    chunkDiv.className = 'chunk-ops';
+                    chunkDiv.style.marginBottom = '10px';
+                    chunkDiv.style.padding = '8px';
+                    chunkDiv.style.background = '#1e1e1e';
+                    chunkDiv.style.borderRadius = '4px';
+                    
+                    // Chunk header
+                    const chunkHeader = document.createElement('div');
+                    chunkHeader.style.fontWeight = 'bold';
+                    chunkHeader.style.marginBottom = '5px';
+                    chunkHeader.textContent = `Chunk ${chunkIndex + 1} (chars ${chunk.chunkStart}-${chunk.chunkEnd})`;
+                    chunkDiv.appendChild(chunkHeader);
+                    
+                    // Individual operations
+                    chunk.operations.forEach(op => {
+                        const opDiv = document.createElement('div');
+                        opDiv.style.fontFamily = 'monospace';
+                        opDiv.style.fontSize = '0.85rem';
+                        opDiv.style.padding = '3px';
+                        opDiv.textContent = `[${op.position}] ${op.char} (${op.hexValue}): ${op.operation}`;
+                        chunkDiv.appendChild(opDiv);
+                    });
+                    
+                    // Chunk combination
+                    const combinationDiv = document.createElement('div');
+                    combinationDiv.style.marginTop = '5px';
+                    combinationDiv.style.fontWeight = 'bold';
+                    combinationDiv.style.color = '#4CAF50';
+                    combinationDiv.textContent = `Result: ${chunk.combination}`;
+                    chunkDiv.appendChild(combinationDiv);
+                    
+                    opsDetails.appendChild(chunkDiv);
+                });
+                
+                avgDetails.appendChild(opsDetails);
+                
+                // Toggle operations details
+                opsToggle.addEventListener('click', function() {
+                    if (opsDetails.style.display === 'none') {
+                        opsDetails.style.display = 'block';
+                        opsToggle.textContent = 'Hide Operations Details';
+                    } else {
+                        opsDetails.style.display = 'none';
+                        opsToggle.textContent = 'Show Operations Details';
+                    }
+                });
+            }
+            
+            // Final result
+            const xorResultDiv = document.createElement('div');
+            xorResultDiv.className = 'avg-operations';
+            xorResultDiv.textContent = `Final Operation Result: ${data.xorResult}`;
+            avgDetails.appendChild(xorResultDiv);
+            
+            const finalValueDiv = document.createElement('div');
+            finalValueDiv.className = 'avg-final';
+            finalValueDiv.textContent = `Final Value: ${data.finalValue} (0x${data.finalValue.toString(16)})`;
+            avgDetails.appendChild(finalValueDiv);
+            
+            avgDiv.appendChild(avgDetails);
             averages.appendChild(avgDiv);
         });
 
@@ -240,16 +386,20 @@
         state.data.partData.forEach((data, index) => {
             const avgDiv = document.createElement('div');
             avgDiv.className = 'average-value';
-            avgDiv.innerHTML = `
+            
+            // Create basic layout and content
+            const html = `
                 <div class="avg-label">Part ${index + 1}</div>
                 <div class="avg-details">
                     <div class="avg-sum">Sum: ${data.sum}</div>
-                    <div class="avg-exact">Exact: ${data.exactAverage.toFixed(3)}</div>
-                    <div class="avg-rounded">Average: ${data.roundedAverage}</div>
-                    <div class="avg-operations">Operations: ${data.xorResult || 0}</div>
-                    <div class="avg-final">Final Value: ${data.finalValue || data.roundedAverage} (${(data.finalValue || data.roundedAverage).toString(16)})</div>
+                    <div class="avg-exact">Exact Average: ${data.exactAverage.toFixed(3)}</div>
+                    <div class="avg-rounded">Rounded Average: ${data.roundedAverage}</div>
+                    <div class="avg-operations">Final Operation Result: ${data.xorResult || 0}</div>
+                    <div class="avg-final">Final Value: ${data.finalValue || data.roundedAverage} (0x${(data.finalValue || data.roundedAverage).toString(16)})</div>
                 </div>
             `;
+            
+            avgDiv.innerHTML = html;
             averages.appendChild(avgDiv);
         });
         
