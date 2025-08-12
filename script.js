@@ -98,7 +98,6 @@ document.addEventListener('DOMContentLoaded', function() {
 
         // Show results
         results.style.display = 'block';
-        results.scrollIntoView({ behavior: 'smooth', block: 'start' });
     }
 
     // Make handleSubmit globally accessible
