@@ -561,33 +561,6 @@ button:active {
         padding: 0.75rem;
     }
 }
-    
-    .results-container {
-        grid-template-columns: 1fr;
-        gap: 1.5rem;
-    }
-    
-    .results-right {
-        border-left: none;
-        border-top: 1px solid #333;
-        padding-left: 0;
-        padding-top: 1.5rem;
-    }
-    
-    .parts-display {
-        grid-template-columns: 1fr;
-    }
-    
-    .averages-display {
-        grid-template-columns: repeat(2, 1fr);
-    }
-    
-    .final-display {
-        flex-direction: column;
-        text-align: center;
-        gap: 1rem;
-    }
-}
 
 @media (max-width: 480px) {
     .site-header h1 {
