@@ -229,9 +229,8 @@
         
         // Add to beginning of array
         history.unshift(entry);
-        
-        // Keep only last 10
-        history = history.slice(0, 10);
+        // Keep only last 25
+        history = history.slice(0, 25);
         
         // Save to localStorage
         localStorage.setItem('ashhsha-history', JSON.stringify(history));
