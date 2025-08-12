@@ -75,6 +75,62 @@ body {
     border-radius: 4px;
     transition: all 0.3s ease;
     box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.5);
+    position: relative;
+    cursor: pointer;
+    overflow: hidden;
+}
+
+.color-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.85);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    padding: 1rem;
+    text-align: center;
+}
+
+.color-box:hover .color-overlay {
+    opacity: 1;
+}
+
+.overlay-text {
+    color: #fff;
+    font-size: 0.85rem;
+    font-weight: 400;
+    margin-bottom: 0.5rem;
+    word-wrap: break-word;
+    max-width: 100%;
+    line-height: 1.3;
+}
+
+.overlay-hex {
+    color: #fff;
+    font-family: 'SF Mono', monospace;
+    font-size: 1rem;
+    font-weight: 500;
+    letter-spacing: 1px;
+    padding: 0.5rem;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 4px;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    transition: all 0.2s ease;
+}
+
+.overlay-hex:hover {
+    background: rgba(255, 255, 255, 0.2);
+    border-color: rgba(255, 255, 255, 0.4);
+}
+
+.color-box:active {
+    transform: scale(0.98);
 }
 
 .input-section {
@@ -220,19 +276,39 @@ button:active {
     padding: 1rem;
     border-radius: 4px;
     border: 1px solid #222;
-    text-align: center;
+    text-align: left;
 }
 
 .average-value .avg-label {
     color: #888;
     font-size: 0.8rem;
     margin-bottom: 0.5rem;
+    font-weight: 500;
 }
 
-.average-value .avg-number {
-    font-size: 1.2rem;
-    font-weight: 500;
+.avg-details {
+    display: flex;
+    flex-direction: column;
+    gap: 0.3rem;
+}
+
+.avg-sum, .avg-exact, .avg-rounded {
+    font-family: 'SF Mono', monospace;
+    font-size: 0.85rem;
+    color: #ccc;
+}
+
+.avg-sum {
+    color: #888;
+}
+
+.avg-exact {
+    color: #aaa;
+}
+
+.avg-rounded {
     color: #fff;
+    font-weight: 500;
 }
 
 .final-display {
@@ -272,6 +348,14 @@ button:active {
         width: 160px;
         height: 160px;
     }
+    
+    .overlay-text {
+        font-size: 0.8rem;
+    }
+    
+    .overlay-hex {
+        font-size: 0.9rem;
+    }
 }
 
 @media (max-width: 768px) {
@@ -306,6 +390,15 @@ button:active {
     .color-box {
         width: 120px;
         height: 120px;
+    }
+    
+    .overlay-text {
+        font-size: 0.75rem;
+    }
+    
+    .overlay-hex {
+        font-size: 0.85rem;
+        padding: 0.3rem;
     }
     
     .input-wrapper {
