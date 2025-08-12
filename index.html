@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ASHSHA - String to Color Generator</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>ASHSHA</h1>
+            <p>Transform any string into a unique color through SHA256 hashing</p>
+        </header>
+
+        <main>
+            <div class="input-section">
+                <input type="text" id="textInput" placeholder="Enter your text here..." autocomplete="off">
+                <button id="generateBtn">Generate Color</button>
+            </div>
+
+            <div class="results" id="results" style="display: none;">
+                <div class="color-display" id="colorDisplay"></div>
+                
+                <div class="process-steps">
+                    <div class="step">
+                        <h3>1. Original Hash (SHA256)</h3>
+                        <div class="hash-value" id="originalHash"></div>
+                    </div>
+                    
+                    <div class="step">
+                        <h3>2. Hash with 00 prefix (258 chars)</h3>
+                        <div class="hash-value" id="prefixedHash"></div>
+                    </div>
+                    
+                    <div class="step">
+                        <h3>3. Six Equal Parts (43 chars each)</h3>
+                        <div class="parts-container" id="parts"></div>
+                    </div>
+                    
+                    <div class="step">
+                        <h3>4. Hex Averages</h3>
+                        <div class="averages-container" id="averages"></div>
+                    </div>
+                    
+                    <div class="step">
+                        <h3>5. Final Hex Color</h3>
+                        <div class="final-color" id="finalHex"></div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>

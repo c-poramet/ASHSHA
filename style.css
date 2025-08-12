@@ -1,0 +1,256 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'SF Mono', 'Monaco', 'Inconsolata', 'Roboto Mono', 'Cascadia Code', monospace;
+    background: #0a0a0a;
+    color: #e8e8e8;
+    line-height: 1.6;
+    min-height: 100vh;
+}
+
+.container {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 2rem;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+header {
+    text-align: center;
+    margin-bottom: 3rem;
+    border-bottom: 1px solid #333;
+    padding-bottom: 2rem;
+}
+
+header h1 {
+    font-size: 3rem;
+    font-weight: 200;
+    letter-spacing: 0.2em;
+    color: #fff;
+    margin-bottom: 0.5rem;
+}
+
+header p {
+    color: #888;
+    font-size: 0.9rem;
+    font-weight: 300;
+}
+
+main {
+    flex: 1;
+}
+
+.input-section {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 3rem;
+    align-items: center;
+}
+
+#textInput {
+    flex: 1;
+    background: #1a1a1a;
+    border: 1px solid #333;
+    color: #e8e8e8;
+    padding: 1rem 1.5rem;
+    font-family: inherit;
+    font-size: 1rem;
+    border-radius: 2px;
+    transition: all 0.2s ease;
+}
+
+#textInput:focus {
+    outline: none;
+    border-color: #555;
+    background: #222;
+}
+
+#textInput::placeholder {
+    color: #666;
+}
+
+#generateBtn {
+    background: #fff;
+    color: #000;
+    border: none;
+    padding: 1rem 2rem;
+    font-family: inherit;
+    font-size: 1rem;
+    cursor: pointer;
+    border-radius: 2px;
+    transition: all 0.2s ease;
+    font-weight: 500;
+    letter-spacing: 0.05em;
+}
+
+#generateBtn:hover {
+    background: #f0f0f0;
+    transform: translateY(-1px);
+}
+
+#generateBtn:active {
+    transform: translateY(0);
+}
+
+.results {
+    animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.color-display {
+    width: 100%;
+    height: 120px;
+    border-radius: 2px;
+    margin-bottom: 2rem;
+    border: 1px solid #333;
+    position: relative;
+    overflow: hidden;
+}
+
+.color-display::after {
+    content: attr(data-color);
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: rgba(0, 0, 0, 0.7);
+    color: #fff;
+    padding: 0.5rem;
+    font-size: 0.9rem;
+    text-align: center;
+    backdrop-filter: blur(4px);
+}
+
+.process-steps {
+    display: grid;
+    gap: 2rem;
+}
+
+.step {
+    background: #111;
+    border: 1px solid #222;
+    padding: 1.5rem;
+    border-radius: 2px;
+}
+
+.step h3 {
+    color: #fff;
+    margin-bottom: 1rem;
+    font-size: 1rem;
+    font-weight: 400;
+    letter-spacing: 0.05em;
+}
+
+.hash-value {
+    font-family: inherit;
+    font-size: 0.8rem;
+    line-height: 1.8;
+    background: #0a0a0a;
+    padding: 1rem;
+    border-radius: 2px;
+    border: 1px solid #333;
+    word-break: break-all;
+    color: #ccc;
+}
+
+.parts-container {
+    display: grid;
+    gap: 0.5rem;
+}
+
+.part {
+    background: #0a0a0a;
+    padding: 0.8rem;
+    border-radius: 2px;
+    border: 1px solid #333;
+    font-size: 0.8rem;
+    word-break: break-all;
+    color: #ccc;
+}
+
+.part-label {
+    color: #888;
+    font-size: 0.7rem;
+    margin-bottom: 0.3rem;
+}
+
+.averages-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+    gap: 1rem;
+}
+
+.average {
+    background: #0a0a0a;
+    padding: 1rem;
+    border-radius: 2px;
+    border: 1px solid #333;
+    text-align: center;
+}
+
+.average-label {
+    color: #888;
+    font-size: 0.7rem;
+    margin-bottom: 0.5rem;
+}
+
+.average-value {
+    color: #fff;
+    font-size: 1.2rem;
+    font-weight: 500;
+}
+
+.final-color {
+    background: #0a0a0a;
+    padding: 2rem;
+    border-radius: 2px;
+    border: 1px solid #333;
+    text-align: center;
+}
+
+.final-hex {
+    font-size: 2rem;
+    color: #fff;
+    letter-spacing: 0.1em;
+    font-weight: 300;
+}
+
+.color-preview {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    border: 2px solid #333;
+    margin: 1rem auto;
+}
+
+@media (max-width: 768px) {
+    .container {
+        padding: 1rem;
+    }
+    
+    header h1 {
+        font-size: 2rem;
+    }
+    
+    .input-section {
+        flex-direction: column;
+    }
+    
+    #generateBtn {
+        width: 100%;
+    }
+    
+    .averages-container {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
