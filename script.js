@@ -10,12 +10,21 @@ document.addEventListener('DOMContentLoaded', function() {
     const finalHex = document.getElementById('finalHex');
 
     function generateColor() {
-        const inputText = textInput.value.trim();
+        const inputText = document.getElementById('textInput').value.trim();
         
         if (!inputText) {
-            alert('Please enter some text');
+            alert('Please enter some text!');
             return;
         }
+
+        // Get DOM elements
+        const colorPreview = document.getElementById('colorPreview');
+        const originalHash = document.getElementById('originalHash');
+        const prefixedHash = document.getElementById('prefixedHash');
+        const hashPartsContainer = document.getElementById('hashParts');
+        const averages = document.getElementById('averages');
+        const finalHex = document.getElementById('finalHex');
+        const results = document.getElementById('results');
 
         // Step 1: Generate SHA256 hash
         const hash = CryptoJS.SHA256(inputText).toString();
@@ -36,15 +45,15 @@ document.addEventListener('DOMContentLoaded', function() {
         }
 
         // Display parts
-        parts.innerHTML = '';
+        hashPartsContainer.innerHTML = '';
         hashParts.forEach((part, index) => {
             const partDiv = document.createElement('div');
             partDiv.className = 'part';
             partDiv.innerHTML = `
-                <div class="part-label">Part ${index + 1} (${part.length} chars)</div>
-                ${part}
+                <div class="part-label">Part ${index + 1}</div>
+                <div class="part-content">${part}</div>
             `;
-            parts.appendChild(partDiv);
+            hashPartsContainer.appendChild(partDiv);
         });
 
         // Step 4: Calculate averages for each part
@@ -78,36 +87,45 @@ document.addEventListener('DOMContentLoaded', function() {
 
         const hexColor = `#${r.toString(16).padStart(2, '0')}${g.toString(16).padStart(2, '0')}${b.toString(16).padStart(2, '0')}`;
 
+        // Update the main color box in the top panel
+        colorPreview.style.backgroundColor = hexColor;
+
         // Display final result
         finalHex.innerHTML = `
             <div class="final-hex">${hexColor.toUpperCase()}</div>
             <div class="color-preview" style="background-color: ${hexColor};"></div>
         `;
 
-        // Update color display
-        colorDisplay.style.backgroundColor = hexColor;
-        colorDisplay.setAttribute('data-color', hexColor.toUpperCase());
-
         // Show results
         results.style.display = 'block';
         results.scrollIntoView({ behavior: 'smooth', block: 'start' });
     }
 
-    function handleSubmit() {
+    // Make handleSubmit globally accessible
+    window.handleSubmit = function() {
         generateColor();
     }
 
     // Event listeners
-    generateBtn.addEventListener('click', handleSubmit);
-    
-    textInput.addEventListener('keypress', function(e) {
-        if (e.key === 'Enter') {
-            handleSubmit();
+    document.addEventListener('DOMContentLoaded', function() {
+        const generateBtn = document.querySelector('button');
+        const textInput = document.getElementById('textInput');
+        
+        if (generateBtn) {
+            generateBtn.addEventListener('click', handleSubmit);
+        }
+        
+        if (textInput) {
+            textInput.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    handleSubmit();
+                }
+            });
+            
+            // Auto-focus input
+            textInput.focus();
         }
     });
-
-    // Auto-focus input
-    textInput.focus();
 
     // Demo with placeholder text
     textInput.addEventListener('input', function() {
