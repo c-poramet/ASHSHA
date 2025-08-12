@@ -51,8 +51,9 @@
             hashPartsContainer.appendChild(partDiv);
         });
 
-        // Step 4: Calculate averages for each part
-        const partData = hashParts.map(part => {
+        // Step 4: Process each part with a better distribution algorithm
+        const partData = hashParts.map((part, partIndex) => {
+            // Calculate sum and average as before (for display purposes)
             let sum = 0;
             for (let char of part) {
                 const hexValue = parseInt(char, 16);
@@ -62,14 +63,63 @@
             const exactAverage = sum / part.length;
             const roundedAverage = Math.round(exactAverage);
             
+            // Enhanced algorithm to create more varied colors
+            // Process characters in chunks for better distribution
+            let value = 0;
+            const chunkSize = 7; // Process 7 chars at a time
+            
+            for (let i = 0; i < part.length; i += chunkSize) {
+                let chunkValue = 0;
+                
+                // Process each character in the chunk
+                for (let j = 0; j < chunkSize && (i + j) < part.length; j++) {
+                    const hexValue = parseInt(part[i + j], 16);
+                    if (!isNaN(hexValue)) {
+                        // Apply different operations based on position
+                        const position = (i + j) % 5;
+                        
+                        switch(position) {
+                            case 0:
+                                // XOR with left shift by part index
+                                chunkValue ^= (hexValue << (partIndex % 8));
+                                break;
+                            case 1:
+                                // Multiply (with mod to prevent overflow)
+                                chunkValue = (chunkValue * (hexValue + 1)) % 256;
+                                break;
+                            case 2:
+                                // Bitwise rotation
+                                chunkValue = ((chunkValue << 4) | (chunkValue >>> 4)) ^ hexValue;
+                                break;
+                            case 3:
+                                // Addition with bit mask
+                                chunkValue = (chunkValue + hexValue) & 0xFF;
+                                break;
+                            case 4:
+                                // XOR with right shift
+                                chunkValue ^= (hexValue >>> (partIndex % 4));
+                                break;
+                        }
+                    }
+                }
+                
+                // Combine chunk value with running total
+                value = ((value << 3) | (value >>> 5)) ^ chunkValue;
+            }
+            
+            // Ensure final value is in 0-255 range for full 8-bit color channels
+            const finalValue = value & 0xFF;
+            
             return {
                 sum: sum,
                 exactAverage: exactAverage,
-                roundedAverage: roundedAverage
+                roundedAverage: roundedAverage,
+                xorResult: value,
+                finalValue: finalValue
             };
         });
 
-        // Display averages
+        // Display averages and calculations
         averages.innerHTML = '';
         partData.forEach((data, index) => {
             const avgDiv = document.createElement('div');
@@ -79,19 +129,18 @@
                 <div class="avg-details">
                     <div class="avg-sum">Sum: ${data.sum}</div>
                     <div class="avg-exact">Exact: ${data.exactAverage.toFixed(3)}</div>
-                    <div class="avg-rounded">Rounded: ${data.roundedAverage}</div>
+                    <div class="avg-rounded">Average: ${data.roundedAverage}</div>
+                    <div class="avg-operations">Operations: ${data.xorResult}</div>
+                    <div class="avg-final">Final Value: ${data.finalValue} (${data.finalValue.toString(16)})</div>
                 </div>
             `;
             averages.appendChild(avgDiv);
         });
 
         // Step 5: Convert to hex color
-        // Convert each averaged value (0-15) directly to hex digit
-        const avgValues = partData.map(data => data.roundedAverage);
-        const hexColor = '#' + avgValues.map(value => {
-            // Ensure value is in range 0-15, then convert to hex
-            const clampedValue = Math.min(15, Math.max(0, value));
-            return clampedValue.toString(16);
+        // Use the finalValue (0-255) for each color channel
+        const hexColor = '#' + partData.slice(0, 3).map(data => {
+            return data.finalValue.toString(16).padStart(2, '0');
         }).join('');
 
         // Update the main color box in the top panel
@@ -110,7 +159,6 @@
             prefixedHash: prefixed,
             hashParts: hashParts,
             partData: partData,
-            avgValues: avgValues,
             hexColor: hexColor.toUpperCase()
         });
 
@@ -197,7 +245,9 @@
                 <div class="avg-details">
                     <div class="avg-sum">Sum: ${data.sum}</div>
                     <div class="avg-exact">Exact: ${data.exactAverage.toFixed(3)}</div>
-                    <div class="avg-rounded">Rounded: ${data.roundedAverage}</div>
+                    <div class="avg-rounded">Average: ${data.roundedAverage}</div>
+                    <div class="avg-operations">Operations: ${data.xorResult || 0}</div>
+                    <div class="avg-final">Final Value: ${data.finalValue || data.roundedAverage} (${(data.finalValue || data.roundedAverage).toString(16)})</div>
                 </div>
             `;
             averages.appendChild(avgDiv);
