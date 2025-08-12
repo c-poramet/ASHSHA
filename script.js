@@ -1,13 +1,6 @@
-document.addEventListener('DOMContentLoaded', function() {
-    const textInput = document.getElementById('textInput');
-    const generateBtn = document.getElementById('generateBtn');
-    const results = document.getElementById('results');
-    const colorDisplay = document.getElementById('colorDisplay');
-    const originalHash = document.getElementById('originalHash');
-    const prefixedHash = document.getElementById('prefixedHash');
-    const parts = document.getElementById('parts');
-    const averages = document.getElementById('averages');
-    const finalHex = document.getElementById('finalHex');
+(function() {
+    // Include the crypto-js library inline for SHA256
+    // This is a simplified version - in production, you'd include the full crypto-js library
 
     function generateColor() {
         const inputText = document.getElementById('textInput').value.trim();
@@ -256,22 +249,45 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Make handleSubmit globally accessible
     window.handleSubmit = function() {
+        console.log('handleSubmit called');
         generateColor();
     }
+
+    // Also make generateColor globally accessible for debugging
+    window.generateColor = generateColor;
 
     // Event listeners
     document.addEventListener('DOMContentLoaded', function() {
         const generateBtn = document.querySelector('button');
         const textInput = document.getElementById('textInput');
         const colorPreview = document.getElementById('colorPreview');
+        const form = document.querySelector('form');
         
         if (generateBtn) {
-            generateBtn.addEventListener('click', handleSubmit);
+            generateBtn.addEventListener('click', function(e) {
+                e.preventDefault();
+                handleSubmit();
+            });
+        }
+        
+        if (form) {
+            form.addEventListener('submit', function(e) {
+                e.preventDefault();
+                handleSubmit();
+            });
         }
         
         if (textInput) {
+            textInput.addEventListener('keydown', function(e) {
+                if (e.key === 'Enter' || e.keyCode === 13) {
+                    e.preventDefault();
+                    handleSubmit();
+                }
+            });
+            
             textInput.addEventListener('keypress', function(e) {
-                if (e.key === 'Enter') {
+                if (e.key === 'Enter' || e.keyCode === 13) {
+                    e.preventDefault();
                     handleSubmit();
                 }
             });
