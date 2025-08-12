@@ -108,6 +108,9 @@ document.addEventListener('DOMContentLoaded', function() {
         overlayText.textContent = inputText.length > 20 ? inputText.substring(0, 20) + '...' : inputText;
         overlayHex.textContent = hexColor.toUpperCase();
 
+        // Save to history
+        saveToHistory(inputText, hexColor.toUpperCase());
+
         // Display final result
         finalHex.innerHTML = `
             <div class="final-hex">${hexColor.toUpperCase()}</div>
@@ -116,6 +119,81 @@ document.addEventListener('DOMContentLoaded', function() {
 
         // Show results
         results.style.display = 'block';
+    }
+
+    // History management functions
+    function saveToHistory(text, hexColor) {
+        let history = getHistory();
+        
+        // Create new entry
+        const entry = {
+            text: text,
+            hexColor: hexColor,
+            timestamp: new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})
+        };
+        
+        // Remove duplicate if exists (same text)
+        history = history.filter(item => item.text !== text);
+        
+        // Add to beginning of array
+        history.unshift(entry);
+        
+        // Keep only last 10
+        history = history.slice(0, 10);
+        
+        // Save to localStorage
+        localStorage.setItem('ashhsha-history', JSON.stringify(history));
+        
+        // Update display
+        updateHistoryDisplay();
+    }
+    
+    function getHistory() {
+        try {
+            const stored = localStorage.getItem('ashhsha-history');
+            return stored ? JSON.parse(stored) : [];
+        } catch (e) {
+            console.error('Error loading history:', e);
+            return [];
+        }
+    }
+    
+    function updateHistoryDisplay() {
+        const historyContainer = document.getElementById('history');
+        const history = getHistory();
+        
+        if (history.length === 0) {
+            historyContainer.innerHTML = '<div class="history-empty">No history yet. Generate some colors!</div>';
+            return;
+        }
+        
+        historyContainer.innerHTML = history.map(entry => {
+            // Calculate text color based on background brightness
+            const hex = entry.hexColor.replace('#', '');
+            const r = parseInt(hex.substr(0, 2), 16);
+            const g = parseInt(hex.substr(2, 2), 16);
+            const b = parseInt(hex.substr(4, 2), 16);
+            const brightness = (r * 299 + g * 587 + b * 114) / 1000;
+            const textColor = brightness > 128 ? '#000000' : '#ffffff';
+            
+            return `
+                <div class="history-item" style="background-color: ${entry.hexColor}; color: ${textColor};" 
+                     onclick="loadFromHistory('${entry.text.replace(/'/g, "\\'")}', '${entry.hexColor}')">
+                    <div class="history-color" style="background-color: ${entry.hexColor};"></div>
+                    <div class="history-content">
+                        <div class="history-text">${entry.text}</div>
+                        <div class="history-hex">${entry.hexColor}</div>
+                    </div>
+                    <div class="history-time">${entry.timestamp}</div>
+                </div>
+            `;
+        }).join('');
+    }
+    
+    function loadFromHistory(text, hexColor) {
+        const textInput = document.getElementById('textInput');
+        textInput.value = text;
+        generateColor();
     }
 
     // Copy hex code to clipboard
@@ -200,6 +278,9 @@ document.addEventListener('DOMContentLoaded', function() {
             
             // Auto-focus input
             textInput.focus();
+            
+            // Load history on page load
+            updateHistoryDisplay();
             
             // Demo with placeholder text
             textInput.addEventListener('input', function() {

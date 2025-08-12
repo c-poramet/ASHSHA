@@ -35,29 +35,44 @@
 
         <!-- Process Panel -->
         <div id="results" class="process-panel">
-            <div class="step">
-                <h3>1. Original SHA256 Hash (256 chars)</h3>
-                <div id="originalHash" class="hash-display"></div>
-            </div>
+            <div class="results-container">
+                <!-- Left Side - Current Results -->
+                <div class="results-left">
+                    <div class="step">
+                        <h3>1. Original SHA256 Hash (256 chars)</h3>
+                        <div id="originalHash" class="hash-display"></div>
+                    </div>
 
-            <div class="step">
-                <h3>2. With Zeros Added (258 chars)</h3>
-                <div id="prefixedHash" class="hash-display"></div>
-            </div>
+                    <div class="step">
+                        <h3>2. With Zeros Added (258 chars)</h3>
+                        <div id="prefixedHash" class="hash-display"></div>
+                    </div>
 
-            <div class="step">
-                <h3>3. Divided into 6 Parts</h3>
-                <div id="hashParts" class="parts-display"></div>
-            </div>
+                    <div class="step">
+                        <h3>3. Divided into 6 Parts</h3>
+                        <div id="hashParts" class="parts-display"></div>
+                    </div>
 
-            <div class="step">
-                <h3>4. Averaged Values</h3>
-                <div id="averages" class="averages-display"></div>
-            </div>
+                    <div class="step">
+                        <h3>4. Averaged Values</h3>
+                        <div id="averages" class="averages-display"></div>
+                    </div>
 
-            <div class="step">
-                <h3>5. Final Hex Color</h3>
-                <div id="finalHex" class="final-display"></div>
+                    <div class="step">
+                        <h3>5. Final Hex Color</h3>
+                        <div id="finalHex" class="final-display"></div>
+                    </div>
+                </div>
+
+                <!-- Right Side - History -->
+                <div class="results-right">
+                    <div class="step">
+                        <h3>History</h3>
+                        <div id="history" class="history-display">
+                            <div class="history-empty">No history yet. Generate some colors!</div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>

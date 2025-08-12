@@ -206,6 +206,94 @@ button:active {
     width: 100%;
 }
 
+.results-container {
+    display: grid;
+    grid-template-columns: 1fr 400px;
+    gap: 2rem;
+    min-height: 500px;
+}
+
+.results-left {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+}
+
+.results-right {
+    border-left: 1px solid #333;
+    padding-left: 2rem;
+}
+
+.history-display {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    max-height: 500px;
+    overflow-y: auto;
+}
+
+.history-empty {
+    color: #666;
+    font-style: italic;
+    text-align: center;
+    padding: 2rem;
+}
+
+.history-item {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 0.75rem;
+    border-radius: 4px;
+    border: 1px solid #333;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    position: relative;
+    color: #fff;
+}
+
+.history-item:hover {
+    border-color: #555;
+    transform: translateY(-1px);
+}
+
+.history-item .history-color {
+    width: 40px;
+    height: 40px;
+    border-radius: 4px;
+    border: 2px solid rgba(255, 255, 255, 0.2);
+    flex-shrink: 0;
+}
+
+.history-item .history-content {
+    flex: 1;
+    min-width: 0;
+}
+
+.history-item .history-text {
+    font-size: 0.9rem;
+    font-weight: 400;
+    margin-bottom: 0.25rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.history-item .history-hex {
+    font-family: 'SF Mono', monospace;
+    font-size: 0.8rem;
+    opacity: 0.8;
+    letter-spacing: 0.5px;
+}
+
+.history-item .history-time {
+    font-size: 0.7rem;
+    opacity: 0.6;
+    position: absolute;
+    top: 0.5rem;
+    right: 0.75rem;
+}
+
 .step {
     margin-bottom: 2rem;
     padding-bottom: 2rem;
@@ -406,6 +494,18 @@ button:active {
         align-items: stretch;
     }
     
+    .results-container {
+        grid-template-columns: 1fr;
+        gap: 1.5rem;
+    }
+    
+    .results-right {
+        border-left: none;
+        border-top: 1px solid #333;
+        padding-left: 0;
+        padding-top: 1.5rem;
+    }
+    
     .parts-display {
         grid-template-columns: 1fr;
     }
@@ -419,6 +519,10 @@ button:active {
         text-align: center;
         gap: 1rem;
     }
+    
+    .history-display {
+        max-height: 300px;
+    }
 }
 
 @media (max-width: 480px) {
@@ -429,5 +533,18 @@ button:active {
     
     .averages-display {
         grid-template-columns: 1fr;
+    }
+    
+    .results-container {
+        grid-template-columns: 1fr;
+    }
+    
+    .history-item {
+        padding: 0.5rem;
+    }
+    
+    .history-item .history-color {
+        width: 30px;
+        height: 30px;
     }
 }
